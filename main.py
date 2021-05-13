@@ -1,5 +1,8 @@
 import requests
 
+port_start = 1000
+port_finish = 2000
+
 open_ports = []
 closed_ports = []
 
@@ -38,7 +41,7 @@ def portscan(port):
 
 if __name__ == '__main__':
     try:
-        scan_ports(1000, 65355)
+        scan_ports(port_start, port_finish)
         print("Открытые порты")
         print(', '.join(open_ports))
         print("Закрытые порты")
