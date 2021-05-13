@@ -1,16 +1,35 @@
-# This is a sample Python script.
+import socket
+from datetime import time
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import requests
+
+open_ports = []
+closed_ports = []
+
+def scan_ports(min, max):
+    for port in range(min, max + 1):
+        portscan(port)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def portscan(port):
+    try:
+        r = requests.get(f"http://portquiz.net:{port}", timeout=10)
+        if r.status_code == 200:
+            # print('Port :', port, "is open.")
+            open_ports.append(f"{port}, ")
+            print('Port :', port, " открыт ", r.status_code)
+        else:
+            closed_ports.append(f"{port}, ")
+        r.close()
+    except:
+        pass
 
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    scan_ports(1, 65355)
+    print("Открытые порты")
+    print(', '.join(open_ports))
+    print("Закрытые порты")
+    print(', '.join(closed_ports))
+    print("Сканирование завершено")
