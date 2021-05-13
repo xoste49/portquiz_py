@@ -23,14 +23,14 @@ def portscan(port):
     try:
         r = requests.get(f"http://portquiz.net:{port}", timeout=1)
         if r.status_code == 200:
-            open_ports.append(f"{port}, ")
+            open_ports.append(f"{port}")
             print('Port:', port, "is open.")
         else:
-            closed_ports.append(f"{port}, ")
+            closed_ports.append(f"{port}")
             print('Port:', port, "is closed.")
         r.close()
     except requests.ConnectTimeout as e:
-        closed_ports.append(f"{port}, ")
+        closed_ports.append(f"{port}")
         print('Port:', port, "is closed.")
     except Exception as e:
         print(e.message)
@@ -51,6 +51,6 @@ if __name__ == '__main__':
         print("Закрытые порты")
         print(', '.join(closed_ports))
         print('Завершение работы программы.')
-        exit(0)
     finally:
         input("Press Enter to exit...")
+        exit(0)
