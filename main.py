@@ -37,9 +37,20 @@ def portscan(port):
 
 
 if __name__ == '__main__':
-    scan_ports(1000, 65355)
-    print("Открытые порты")
-    print(', '.join(open_ports))
-    print("Закрытые порты")
-    print(', '.join(closed_ports))
-    print("Сканирование завершено")
+    try:
+        scan_ports(1000, 65355)
+        print("Открытые порты")
+        print(', '.join(open_ports))
+        print("Закрытые порты")
+        print(', '.join(closed_ports))
+        print("Сканирование завершено")
+    except KeyboardInterrupt:
+        # Обработать исключение Ctrl-C, чтобы не отображалось сообщение об ошибке
+        print("Открытые порты")
+        print(', '.join(open_ports))
+        print("Закрытые порты")
+        print(', '.join(closed_ports))
+        print('Завершение работы программы.')
+        exit(0)
+    finally:
+        input("Press Enter to exit...")
