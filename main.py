@@ -1,14 +1,17 @@
-import requests
 from datetime import datetime
+
+import requests
+
 start_time = datetime.now()
 
 port_start = 1
 port_finish = 60000
-timeout_connect = 3     # в секундах
+timeout_connect = 3     # timeout в секундах
 
 ports = []      # Список портов для сканирования
 open_ports = []
 closed_ports = []
+
 
 def scan_ports(from_port, to_port):
     """
@@ -50,24 +53,22 @@ def portscan(port: int):
         print(e)
 
 
+def print_result():
+    print("Просканировано:", (len(open_ports) + len(closed_ports)), "портов")
+    print("Открытые порты")
+    print(', '.join(open_ports))
+    print("Закрытые порты")
+    print(', '.join(closed_ports))
+
+
 if __name__ == '__main__':
     try:
         scan_ports(port_start, port_finish)
-        print("Просканировано:", (len(open_ports)+len(closed_ports)), "портов")
-        print("Открытые порты")
-        print(', '.join(open_ports))
-        print("Закрытые порты")
-        print(', '.join(closed_ports))
+        print_result()
         print("Сканирование завершено")
     except KeyboardInterrupt:
         # Обработать исключение Ctrl-C
-        print("Просканировано:", (len(open_ports) + len(closed_ports)),
-              "портов")
-        print("Открытые порты")
-        print(', '.join(open_ports))
-        print("Закрытые порты")
-        print(', '.join(closed_ports))
-        print('Завершение работы программы.')
+        print_result()
     except Exception as e:
         print(e)
     finally:
