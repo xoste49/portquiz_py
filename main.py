@@ -1,20 +1,14 @@
 import requests
-import threading
 from datetime import datetime
 start_time = datetime.now()
 
 port_start = 1
 port_finish = 60000
-count_threads = 5       # Количество потоков (10 потоков ловят бан)
-count_ports_scanned = 0
+timeout_connect = 3     # в секундах
 
 ports = []      # Список портов для сканирования
 open_ports = []
 closed_ports = []
-threads = []    # Потоки
-
-finished = False        # Завершена ли программа принудительно
-
 
 def scan_ports(from_port, to_port):
     """
@@ -25,25 +19,12 @@ def scan_ports(from_port, to_port):
 
     for port in range(from_port, to_port + 1):
         ports.append(port)
-
+    print("Будет просканировано:", str(to_port - from_port + 1), "портов")
     print("Будет просканировано:", len(ports), "портов")
-    """ Запускаем указанное количество потоков """
-    for t in range(0, count_threads):
-        threads.append(threading.Thread(target=runner, daemon=False).start())
 
-    """ Ожидаем выполнения потоков """
-    for thread in threads:
-        while True:
-            thread.join(1)
-            if not thread.is_alive():
-                break
+    for port in ports:
+        portscan(port)
 
-
-
-
-def runner():
-    while len(ports) != 0 and finished == False:
-        portscan(ports.pop(0))
 
 def portscan(port: int):
     """
@@ -60,13 +41,14 @@ def portscan(port: int):
             closed_ports.append(f"{port}")
             print('Port:', port, "is closed.", r.status_code)
         r.close()
-    except requests.ConnectTimeout as e:
+    except requests.ConnectTimeout:
         closed_ports.append(f"{port}")
         print('Port:', port, "is closed.")
     except requests.exceptions.ConnectionError as e:
         print(e)
     except Exception as e:
         print(e)
+
 
 if __name__ == '__main__':
     try:
@@ -78,10 +60,7 @@ if __name__ == '__main__':
         print(', '.join(closed_ports))
         print("Сканирование завершено")
     except KeyboardInterrupt:
-        # Обработать исключение Ctrl-C, чтобы не отображалось сообщение об ошибке
-        finished = True
-        for thread in threads:
-            thread.join()
+        # Обработать исключение Ctrl-C
         print("Просканировано:", (len(open_ports) + len(closed_ports)),
               "портов")
         print("Открытые порты")
