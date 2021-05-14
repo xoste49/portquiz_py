@@ -2,12 +2,12 @@ from datetime import datetime
 
 import requests
 
-start_time = datetime.now()
-
 port_start = 1
-port_finish = 60000
-timeout_connect = 3     # timeout в секундах
+port_finish = 100
+timeout_connect = 5     # timeout в секундах
 
+
+start_time = datetime.now()
 ports = []      # Список портов для сканирования
 open_ports = []
 closed_ports = []
@@ -32,7 +32,10 @@ def portscan(port: int):
     :return: результат сканирования порта
     """
     try:
-        r = requests.get(f"http://portquiz.net:{port}", timeout=10)
+        r = requests.get(
+            f"http://portquiz.net:{port}",
+            timeout=timeout_connect
+        )
         if r.status_code == 200:
             open_ports.append(f"{port}")
             print('Port:', port, "is open.")
