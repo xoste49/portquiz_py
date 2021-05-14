@@ -20,12 +20,8 @@ def scan_ports(from_port, to_port):
     :param to_port: Конечный порт сканирования
     """
 
-    for port in range(from_port, to_port + 1):
-        ports.append(port)
     print("Будет просканировано:", str(to_port - from_port + 1), "портов")
-    print("Будет просканировано:", len(ports), "портов")
-
-    for port in ports:
+    for port in range(from_port, to_port + 1):
         portscan(port)
 
 
@@ -64,14 +60,14 @@ def print_result():
 if __name__ == '__main__':
     try:
         scan_ports(port_start, port_finish)
-        print_result()
-        print("Сканирование завершено")
     except KeyboardInterrupt:
         # Обработать исключение Ctrl-C
-        print_result()
+        pass
     except Exception as e:
         print(e)
     finally:
+        print_result()
+        print("Сканирование завершено")
         end_time = datetime.now()
         print('Прошло: {}'.format(end_time - start_time))
         input("Press Enter to exit...")
