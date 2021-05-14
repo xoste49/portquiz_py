@@ -5,12 +5,15 @@ start_time = datetime.now()
 
 port_start = 1
 port_finish = 60000
-count_threads = 10
+count_threads = 5       # Количество потоков (10 потоков ловят бан)
 count_ports_scanned = 0
 
 ports = []      # Список портов для сканирования
 open_ports = []
 closed_ports = []
+threads = []    # Потоки
+
+finished = False        # Завершена ли программа принудительно
 
 
 def scan_ports(from_port, to_port):
@@ -20,27 +23,26 @@ def scan_ports(from_port, to_port):
     :param to_port: Конечный порт сканирования
     """
 
-    threads = []    # Потоки
-
     for port in range(from_port, to_port + 1):
         ports.append(port)
 
     print("Будет просканировано:", len(ports), "портов")
-    """ Создаем потоки """
-    for t in range(0, count_threads):
-        threads.append(threading.Thread(target=runner))
-
     """ Запускаем указанное количество потоков """
-    for thread in threads:
-        thread.start()
+    for t in range(0, count_threads):
+        threads.append(threading.Thread(target=runner, daemon=False).start())
 
     """ Ожидаем выполнения потоков """
     for thread in threads:
-        thread.join()
+        while True:
+            thread.join(1)
+            if not thread.is_alive():
+                break
+
+
 
 
 def runner():
-    while len(ports) != 0:
+    while len(ports) != 0 and finished == False:
         portscan(ports.pop(0))
 
 def portscan(port: int):
@@ -50,7 +52,7 @@ def portscan(port: int):
     :return: результат сканирования порта
     """
     try:
-        r = requests.get(f"http://portquiz.net:{port}")
+        r = requests.get(f"http://portquiz.net:{port}", timeout=10)
         if r.status_code == 200:
             open_ports.append(f"{port}")
             print('Port:', port, "is open.")
@@ -66,7 +68,6 @@ def portscan(port: int):
     except Exception as e:
         print(e)
 
-
 if __name__ == '__main__':
     try:
         scan_ports(port_start, port_finish)
@@ -78,6 +79,11 @@ if __name__ == '__main__':
         print("Сканирование завершено")
     except KeyboardInterrupt:
         # Обработать исключение Ctrl-C, чтобы не отображалось сообщение об ошибке
+        finished = True
+        for thread in threads:
+            thread.join()
+        print("Просканировано:", (len(open_ports) + len(closed_ports)),
+              "портов")
         print("Открытые порты")
         print(', '.join(open_ports))
         print("Закрытые порты")
