@@ -3,8 +3,8 @@ import threading
 from datetime import datetime
 start_time = datetime.now()
 
-port_start = 80
-port_finish = 85
+port_start = 1
+port_finish = 60000
 count_threads = 10
 count_ports_scanned = 0
 
@@ -50,8 +50,7 @@ def portscan(port: int):
     :return: результат сканирования порта
     """
     try:
-        #r = requests.get(f"http://portquiz.net:{port}", timeout=5)
-        r = requests.get(f"http://yandex.ru:{port}", timeout=5)
+        r = requests.get(f"http://portquiz.net:{port}")
         if r.status_code == 200:
             open_ports.append(f"{port}")
             print('Port:', port, "is open.")
@@ -62,8 +61,10 @@ def portscan(port: int):
     except requests.ConnectTimeout as e:
         closed_ports.append(f"{port}")
         print('Port:', port, "is closed.")
+    except requests.exceptions.ConnectionError as e:
+        print(e)
     except Exception as e:
-        print(e.message)
+        print(e)
 
 
 if __name__ == '__main__':
